@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lakshmi Boutique - Online Shop</title>
+<style>
+  :root{
+    --accent:#0077b6;
+    --muted:#666;
+    --card-bg: #fff;
+    --page-bg:#f6f6f7;
+    --glass: rgba(255,255,255,0.85);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+    background:var(--page-bg);
+    color:#111;
+    -webkit-font-smoothing:antialiased;
+  }
+  header{
+    background:linear-gradient(90deg,#0a2540,#113b5b);
+    color:#fff;
+    padding:18px 20px;
+    display:flex;
+    gap:12px;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+  }
+  .brand{
+    display:flex;
+    gap:12px;
+    align-items:center;
+  }
+  .logo{
+    width:52px;height:52px;border-radius:8px;
+    background:linear-gradient(135deg,#ffb703,#fb8500);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;color:#fff;font-size:18px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
+  }
+  nav{display:flex;gap:12px;align-items:center}
+  nav button, .wh-btn{
+    background:transparent;border:1px solid rgba(255,255,255,0.2);
+    color:#fff;padding:8px 12px;border-radius:6px;cursor:pointer;
+  }
+  .wh-btn{display:flex;gap:8px;align-items:center}
+  main{max-width:1100px;margin:26px auto;padding:0 16px 80px}
+  .hero{
+    background:var(--glass);
+    padding:18px;border-radius:12px;
+    display:flex;gap:18px;align-items:center;flex-wrap:wrap;
+    box-shadow:0 6px 18px rgba(10,20,30,0.06);
+  }
+  .hero-left{flex:1;min-width:260px}
+  .hero h1{margin:0;font-size:22px}
+  .hero p{margin:8px 0;color:var(--muted)}
+  .notes{background:#fff;padding:12px;border-radius:8px;margin-top:12px;color:#0b3b3a}
+  .notes li{margin:6px 0}
+  .actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .btn{
+    background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:0;cursor:pointer;
+  }
+  .gallery{
+    margin-top:20px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:14px;
+  }
+  .card{
+    background:var(--card-bg);border-radius:10px;padding:12px;overflow:hidden;
+    box-shadow:0 6px 18px rgba(10,20,30,0.04);
+  }
+  .card img{width:100%;height:320px;object-fit:cover;border-radius:8px;display:block;cursor:pointer}
+  .card h3{margin:10px 0 6px;font-size:16px}
+  .card p{margin:0 0 10px;color:var(--muted);font-size:14px}
+  .price{font-weight:700;color:#0b3b3a}
+  .card .row{display:flex;gap:8px;align-items:center}
+  .cart-bubble{position:fixed;right:18px;bottom:18px;background:var(--accent);color:#fff;padding:10px 14px;border-radius:40px;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,0.12)}
+  .cart-counter{background:#ff4757;border-radius:50%;padding:4px 7px;margin-left:8px;font-weight:700}
+  footer{padding:18px;color:#444;text-align:center;margin-top:30px}
+
+  /* login & modals */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;padding:20px;z-index:60}
+  .modal{background:#fff;padding:18px;border-radius:12px;max-width:420px;width:100%}
+  .modal h2{margin:0 0 12px}
+  .form-row{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+  .form-row input{padding:10px;border-radius:8px;border:1px solid #ddd}
+  .close-x{float:right;border:0;background:transparent;font-size:20px;cursor:pointer}
+
+  /* lightbox */
+  .lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:none;align-items:center;justify-content:center;z-index:70;padding:20px}
+  .lightbox img{max-width:95%;max-height:90%;border-radius:8px;box-shadow:0 20px 40px rgba(0,0,0,0.5)}
+  .small{font-size:13px;color:var(--muted);margin-top:8px}
+
+  /* checkout drawer */
+  .drawer{position:fixed;right:0;top:0;height:100vh;width:380px;background:#fff;padding:18px;box-shadow:-6px 0 24px rgba(0,0,0,0.12);transform:translateX(110%);transition:transform .25s;z-index:80}
+  .drawer.open{transform:translateX(0)}
+  .cart-item{display:flex;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0f0}
+  .cart-item img{width:72px;height:72px;object-fit:cover;border-radius:8px}
+
+  /* responsive */
+  @media (max-width:600px){
+    .card img{height:220px}
+    .hero{padding:12px}
+  }
+
+  /* small decorative gallery caption */
+  .caption{font-size:13px;color:var(--muted);margin-top:6px}
+  .admin-note{background:#fff5f5;padding:10px;border-radius:8px;color:#7a1f1f;margin-top:12px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">LB</div>
+    <div>
+      <div style="font-weight:700">Lakshmi Boutique</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.85)">Elegant dresses • Home pick-up • Fast delivery</div>
+    </div>
+  </div>
+  <nav>
+    <button onclick="openModal('user')">User Login</button>
+    <button onclick="openModal('admin')">Admin Login</button>
+    <a class="wh-btn" href="https://wa.me/918639299665" target="_blank" title="Contact on WhatsApp">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M20.52 3.48A11.9 11.9 0 0012 .5C6.21.5 1.58 4.93 1.03 10.45c-.34 3.3.86 6.58 3.37 8.7L2 23l3.98-1.04a11.9 11.9 0 004.02.72h.01c5.79 0 10.42-4.43 10.97-9.95.28-2.75-.43-5.4-1.86-7.25zM12 20a8 8 0 110-16 8 8 0 010 16z"/></svg>
+      WhatsApp
+    </a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-left">
+      <h1>Welcome to Lakshmi Boutique — online store</h1>
+      <p>Browse our curated dresses and blouses. To place an order, you can message or call on WhatsApp <strong>+91 86392 99665</strong>.</p>
+
+      <ul class="notes">
+        <li><strong>1.</strong> Your clothes material will be picked up from your home — our shop person will come to your house.</li>
+        <li><strong>2.</strong> The first-time pick-up is <strong>free</strong>.</li>
+        <li><strong>3.</strong> All products are reasonably priced and delivered fast.</li>
+      </ul>
+
+      <div class="actions">
+        <button class="btn" onclick="scrollToGallery()">Browse Products</button>
+        <a class="btn" href="https://wa.me/918639299665" target="_blank" style="text-decoration:none">Order on WhatsApp</a>
+      </div>
+    </div>
+
+    <div style="min-width:260px;flex:0 0 320px">
+      <img alt="Featured dress" src="./IMG-20251028-WA0000.jpg" style="width:100%;height:260px;object-fit:cover;border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,0.08)" />
+      <div class="caption">Featured: Flowing gown with ruffle hem</div>
+    </div>
+  </section>
+
+  <section id="products" class="gallery" aria-label="product gallery">
+    <!-- Product cards: filenames from uploaded images -->
+    <!-- 1 -->
+    <div class="card">
+      <img src="./IMG-20251023-WA0014[1].jpg" alt="Yellow dress" loading="lazy" onclick="openLightbox(this.src,'Yellow dress - Ruffle hem')">
+      <h3>Yellow Ruffle Gown</h3>
+      <p class="small">Bright yellow gown with sea-blue hem ruffle. Great for festive occasions.</p>
+      <div class="row">
+        <div class="price">₹1,499</div>
+        <button class="btn" style="margin-left:auto" onclick="addToCart(this,'Yellow Ruffle Gown','./IMG-20251023-WA0014[1].jpg',1499)">Add to cart</button>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="card">
+      <img src="./IMG-20251023-WA0019[1].jpg" alt="White teal dress" loading="lazy" onclick="openLightbox(this.src,'Ivory & Teal Gown')">
+      <h3>Ivory & Teal Gown</h3>
+      <p class="small">Elegant ivory gown with teal border and bird embroidery.</p>
+      <div class="row">
+        <div class="price">₹1,399</div>
+        <button class="btn" style="margin-left:auto" onclick="addToCart(this,'Ivory & Teal Gown','./IMG-20251023-WA0019[1].jpg',1399)">Add to cart</button>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="card">
+      <img src="./IMG-20251028-WA0001.jpg" alt="Pink blouse" loading="lazy" onclick="openLightbox(this.src,'Pink Bow Blouse')">
+      <h3>Pink Bow Blouse</h3>
+      <p class="small">Shimmery pink blouse with decorative bow — perfect for lehengas.</p>
+      <div class="row">
+        <div class="price">₹499</div>
+        <button class="btn" style="margin-left:auto" onclick="addToCart(this,'Pink Bow Blouse','./IMG-20251028-WA0001.jpg',499)">Add to cart</button>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="card">
+      <img src="./IMG-20251028-WA0002.jpg" alt="Scallop maroon blouse" loading="lazy" onclick="openLightbox(this.src,'Scallop Maroon Blouse')">
+      <h3>Scallop Maroon Blouse</h3>
+      <p class="small">Stylish scallop neckline blouse with tassel back strings.</p>
+      <div class="row">
+        <div class="price">₹549</div>
+        <button class="btn" style="margin-left:auto" onclick="addToCart(this,'Scallop Maroon Blouse','./IMG-20251028-WA0002.jpg',549)">Add to cart</button>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="card">
+      <img src="./IMG-20251028-WA0003.jpg" alt="Green blouse with red piping" loading="lazy" onclick="openLightbox(this.src,'Green Blouse with Piping')">
+      <h3>Green Blouse with Piping</h3>
+      <p class="small">Classic green blouse with red piping and heart-shaped back cutout.</p>
+      <div class="row">
+        <div class="price">₹529</div>
+        <button class="btn" style="margin-left:auto" onclick="addToCart(this,'Green Blouse with Piping','./IMG-20251028-WA0003.jpg',529)">Add to cart</button>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="card">
+      <img src="./IMG-20251028-WA0004.jpg" alt="Blue floral chiffon gown" loading="lazy" onclick="openLightbox(this.src,'Blue Floral Chiffon Gown')">
+      <h3>Blue Floral Chiffon Gown</h3>
+      <p class="small">Flowy floral chiffon maxi — light & breezy for summer.</p>
+      <div class="row">
+        <div class="price">₹1,299</div>
+        <button class="btn" style="margin-left:auto" onclick="addToCart(this,'Blue Floral Chiffon Gown','./IMG-20251028-WA0004.jpg',1299)">Add to cart</button>
+      </div>
+    </div>
+
+    <!-- 7 -->
+    <div class="card">
+      <img src="./IMG-20251028-WA0005.jpg" alt="Green velvet-ish gown" loading="lazy" onclick="openLightbox(this.src,'Olive Shimmer Gown')">
+      <h3>Olive Shimmer Gown</h3>
+      <p class="small">Shimmery olive gown with puffed-sleeve detailing and fringe.</p>
+      <div class="row">
+        <div class="price">₹1,599</div>
+        <button class="btn" style="margin-left:auto" onclick="addToCart(this,'Olive Shimmer Gown','./IMG-20251028-WA0005.jpg',1599)">Add to cart</button>
+      </div>
+    </div>
+
+    <!-- 8 (example full outfit image) -->
+    <div class="card">
+      <img src="./IMG-20251028-WA0000.jpg" alt="Blue formal outfit" loading="lazy" onclick="openLightbox(this.src,'Blue Formal Outfit')">
+      <h3>Blue Formal Set</h3>
+      <p class="small">Rich blue dress with embroidery and dupatta — ready-to-wear set.</p>
+      <div class="row">
+        <div class="price">₹2,299</div>
+        <button class="btn" style="margin-left:auto" onclick="addToCart(this,'Blue Formal Set','./IMG-20251028-WA0000.jpg',2299)">Add to cart</button>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+<!-- Floating cart -->
+<div id="cartBtn" class="cart-bubble" onclick="toggleDrawer()">
+  Cart <span id="cartCount" class="cart-counter">0</span>
+</div>
+
+<!-- Drawer -->
+<aside id="drawer" class="drawer" aria-hidden="true">
+  <h3>Your Cart</h3>
+  <div id="cartList" style="margin-top:8px;min-height:120px"></div>
+  <div style="margin-top:12px;font-weight:700">Total: ₹<span id="cartTotal">0</span></div>
+  <div style="margin-top:12px;display:flex;gap:8px">
+    <button class="btn" onclick="checkout()">Checkout</button>
+    <button style="background:#eee;border:0;padding:10px;border-radius:8px;cursor:pointer" onclick="clearCart()">Clear</button>
+  </div>
+  <div style="margin-top:18px;color:var(--muted);font-size:13px">
+    <strong>Pickup & Delivery</strong>
+    <p style="margin:6px 0">We pick up material from your home. First-time pick-up is free. After checkout we will contact you on WhatsApp <a href="https://wa.me/918639299665" target="_blank">+91 86392 99665</a>.</p>
+  </div>
+</aside>
+
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+  <img id="lightboxImg" alt="">
+  <div style="position:absolute;top:22px;right:22px;color:#fff;font-size:18px;cursor:pointer">✕</div>
+</div>
+
+<!-- Modals -->
+<div id="modalBackdrop" class="modal-backdrop" onclick="closeModal(event)">
+  <div id="modalBox" class="modal" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
+    <button class="close-x" onclick="closeModal()">×</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<footer>
+  <div>© Lakshmi Boutique • Contact on WhatsApp: <a href="https://wa.me/918639299665">+91 86392 99665</a></div>
+</footer>
+
+<script>
+  // Basic client-side cart
+  let cart = [];
+
+  function addToCart(el, title, img, price){
+    cart.push({title,img,price,qty:1});
+    renderCart();
+    flash(el);
+  }
+
+  function flash(el){
+    el.innerText = 'Added ✓';
+    setTimeout(()=> el.innerText = 'Add to cart',900);
+  }
+
+  function renderCart(){
+    const list = document.getElementById('cartList');
+    list.innerHTML = '';
+    let total = 0;
+    if(cart.length===0){
+      list.innerHTML = '<div style="color:var(--muted)">Your cart is empty</div>';
+    } else {
+      cart.forEach((it,idx)=>{
+        total += it.price * it.qty;
+        const node = document.createElement('div');
+        node.className = 'cart-item';
+        node.innerHTML = `
+          <img src="${it.img}" alt="">
+          <div style="flex:1">
+            <div style="font-weight:700">${it.title}</div>
+            <div style="color:var(--muted);font-size:13px">₹${it.price} × ${it.qty}</div>
+            <div style="margin-top:6px">
+              <button style="padding:6px 8px;border-radius:8px;border:0;background:#eee;cursor:pointer" onclick="changeQty(${idx},-1)">-</button>
+              <button style="padding:6px 8px;border-radius:8px;border:0;background:#eee;cursor:pointer;margin-left:6px" onclick="changeQty(${idx},1)">+</button>
+              <button style="padding:6px 8px;border-radius:8px;border:0;background:#ffd6d6;cursor:pointer;margin-left:6px" onclick="removeItem(${idx})">Remove</button>
+            </div>
+          </div>
+        `;
+        list.appendChild(node);
+      });
+    }
+    document.getElementById('cartTotal').innerText = total;
+    document.getElementById('cartCount').innerText = cart.reduce((s,i)=> s + i.qty, 0);
+  }
+
+  function changeQty(i,delta){
+    cart[i].qty = Math.max(1, cart[i].qty + delta);
+    renderCart();
+  }
+  function removeItem(i){
+    cart.splice(i,1);
+    renderCart();
+  }
+  function clearCart(){ cart=[]; renderCart(); }
+
+  function toggleDrawer(){
+    const d = document.getElementById('drawer');
+    d.classList.toggle('open');
+    d.setAttribute('aria-hidden', !d.classList.contains('open'));
+  }
+
+  function checkout(){
+    if(cart.length===0){ alert('Cart is empty. Add items first.'); return; }
+    // Simple checkout flow: show instructions and WhatsApp
+    const total = document.getElementById('cartTotal').innerText;
+    const names = cart.map(i=> i.title).join(', ');
+    const msg = encodeURIComponent(`Hello Lakshmi Boutique, I want to order: ${names}. Total: ₹${total}. Please arrange pickup. My address: <enter address>.`);
+    // Open WhatsApp with prefilled message
+    window.open(`https://wa.me/918639299665?text=${msg}`, '_blank');
+  }
+
+  // Lightbox functions
+  function openLightbox(src,alt){
+    const lb = document.getElementById('lightbox');
+    const img = document.getElementById('lightboxImg');
+    img.src = src;
+    img.alt = alt || '';
+    lb.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox(){
+    document.getElementById('lightbox').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  // Modal login (single-file simulation)
+  function openModal(which){
+    const b = document.getElementById('modalBackdrop');
+    const content = document.getElementById('modalContent');
+    if(which==='user'){
+      content.innerHTML = `
+        <h2>User Login</h2>
+        <div class="form-row"><input id="u_phone" placeholder="Phone or Email"></div>
+        <div class="form-row"><input id="u_pass" type="password" placeholder="Password"></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="doUserLogin()">Login</button>
+          <button style="background:#eee;border:0;padding:10px;border-radius:8px;cursor:pointer" onclick="closeModal()">Cancel</button>
+        </div>
+        <div style="margin-top:12px;font-size:13px;color:var(--muted)">Or place order directly on WhatsApp: <a href="https://wa.me/918639299665" target="_blank">+91 86392 99665</a></div>`;
+    } else {
+      content.innerHTML = `
+        <h2>Admin Login</h2>
+        <div class="form-row"><input id="a_user" placeholder="Admin username"></div>
+        <div class="form-row"><input id="a_pass" type="password" placeholder="Admin password"></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" onclick="doAdminLogin()">Login</button>
+          <button style="background:#eee;border:0;padding:10px;border-radius:8px;cursor:pointer" onclick="closeModal()">Cancel</button>
+        </div>
+        <div class="admin-note">Admin area is demo-only. No real admin features in this static demo.</div>`;
+    }
+    b.style.display = 'flex';
+  }
+  function closeModal(e){
+    document.getElementById('modalBackdrop').style.display = 'none';
+  }
+  function closeModalEvent(e){
+    if(e.target.id === 'modalBackdrop') closeModal();
+  }
+  function closeModalClick(ev){
+    if(ev.target.id === 'modalBackdrop') closeModal();
+  }
+  function doUserLogin(){
+    const phone = document.getElementById('u_phone').value.trim();
+    if(!phone){ alert('Enter phone or email'); return; }
+    alert('Logged in (demo). You can continue shopping. For orders call/WhatsApp +91 86392 99665');
+    closeModal();
+  }
+  function doAdminLogin(){
+    const u = document.getElementById('a_user').value.trim();
+    const p = document.getElementById('a_pass').value.trim();
+    if(u==='admin' && p==='admin123'){
+      alert('Welcome admin (demo). In a real site you would see admin controls here.');
+    } else {
+      alert('Incorrect demo credentials. Use admin / admin123 for demo.');
+    }
+    closeModal();
+  }
+
+  // helper
+  function scrollToGallery(){ document.getElementById('products').scrollIntoView({behavior:'smooth'}); }
+
+  // Close lightbox on Escape key and modal/backdrop handling
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){
+      closeLightbox();
+      closeModal();
+      const d = document.getElementById('drawer');
+      d.classList.remove('open');
+    }
+  });
+
+  // initial cart render
+  renderCart();
+</script>
+
+</body>
+</html>
